@@ -1,5 +1,5 @@
 
-public class startup {
+public class TestGitHubStartup {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
