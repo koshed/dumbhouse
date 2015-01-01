@@ -1,10 +1,12 @@
 package WlanClientScanner;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jibble.simplewebserver.SimpleWebServer;
 import org.jsoup.*;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -67,6 +69,12 @@ public class WlanClientScanner implements IWlanClientScanner {
 		
 		String title = doc.title();
 		return title;
+	}
+
+	@Override
+	public void startupWebServer() throws IOException {
+		File file = new File("./");
+		SimpleWebServer sms = new SimpleWebServer(file, 80);
 	}
 
 }

@@ -21,4 +21,12 @@ public class HTMLScannerTest {
 		assertNotNull(result);
 		assertTrue("html should contain mac, but was just: '" + result + "'", result.contains("test"));
 	}
+	
+	@Test
+	public void webserverTest() throws IOException {
+		IWlanClientScanner iWlanClientScanner = new WlanClientScanner();
+		iWlanClientScanner.startupWebServer();
+		System.out.println("started...");
+		System.in.read();
+	}
 }
