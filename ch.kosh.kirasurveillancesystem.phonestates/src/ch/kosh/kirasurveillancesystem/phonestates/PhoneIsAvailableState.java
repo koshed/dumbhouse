@@ -34,9 +34,14 @@ public class PhoneIsAvailableState {
 	}
 
 	public String updateState(State newState) {
+		if (newState == State.AVAILABLE && extendedAwayState) {
+			removeExtendedAwayState();
+		}
+
 		String stateChangeText = null;
 		if (newState != myState) {
 			stateChangeText = stateChanged(newState);
+
 		}
 
 		if (newState == State.AWAY) {
@@ -46,6 +51,12 @@ public class PhoneIsAvailableState {
 		// log4j.trace(macAddress + " " + phoneOwnerName + " "
 		// + " already in this state: " + myState);
 		return stateChangeText;
+	}
+
+	private void removeExtendedAwayState() {
+		extendedAwayState = false;
+		lastSeenTimestamp = System.currentTimeMillis();
+		addExtendedAwayLog(System.currentTimeMillis(), false);
 	}
 
 	private void detectExtendedAwayState() {
@@ -121,7 +132,8 @@ public class PhoneIsAvailableState {
 
 	public String getExtendedAwayLogAsHTML() {
 		String html = "";
-		for (ExtendedAwayStateLogEntry entry : extendedAwayStateLog) {
+		for (int i = extendedAwayStateLog.size() - 1; i >= 0; i--) {
+			ExtendedAwayStateLogEntry entry = extendedAwayStateLog.get(i);
 			html += entry.toHTMLString() + "<br/>";
 		}
 		return html;
@@ -132,11 +144,20 @@ public class PhoneIsAvailableState {
 			throw new RuntimeException(
 					"Cannot enter extended away state, since not even away!");
 		}
+
 		if (!this.extendedAwayState) {
 			// log thiss event
-			this.extendedAwayStateLog.add(new ExtendedAwayStateLogEntry(
-					timestamp, this.phoneOwnerName));
+			addExtendedAwayLog(timestamp, true);
 			this.extendedAwayState = true;
+		}
+	}
+
+	private void addExtendedAwayLog(long timestamp, boolean isAwayMode) {
+		this.extendedAwayStateLog.add(new ExtendedAwayStateLogEntry(timestamp,
+				this.phoneOwnerName, isAwayMode));
+		while (this.extendedAwayStateLog.size() > 50)
+		{
+			this.extendedAwayStateLog.remove(0);
 		}
 	}
 

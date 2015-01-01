@@ -14,6 +14,32 @@ import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
 
 public class PhoneIsAvailableStateTest {
+	
+	@Test
+	public void extendedAwayRemovedTest() throws ParseException
+	{
+		String name = "dummy";
+		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
+				"AA:22:33", name);
+		phoneIsAvailableState.updateState(State.AWAY);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
+		Date date = dateFormat.parse("2014.12.30 22:54:33");
+		long time = date.getTime();
+		phoneIsAvailableState.setExtendedAway(time);
+		phoneIsAvailableState.updateState(State.AVAILABLE);
+		String html = phoneIsAvailableState.getExtendedAwayLogAsHTML();
+		String expectedStringEnd = name + " is back.<br/>";
+		assertEquals("expected away text expected", true,
+				html.contains(expectedStringEnd));
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void extendedNeedsAwayStateTest()
+	{
+		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
+				"AA:22:33", null);
+		phoneIsAvailableState.setExtendedAway(0);
+	}
 
 	@Test
 	public void extendedAwayLogTest() throws ParseException {
@@ -30,6 +56,11 @@ public class PhoneIsAvailableStateTest {
 		String expectedStringEnd = name + " is extended away.<br/>";
 		assertEquals("expected away text expected", expectedStringEnd,
 				html.substring(html.length() - expectedStringEnd.length()));
+
+		// second time nothing should happen
+		phoneIsAvailableState.setExtendedAway(dateFormat.parse("2015.12.30 11:44:23").getTime());
+		html = phoneIsAvailableState.getExtendedAwayLogAsHTML();
+		assertEquals("timestamp test", "2014-12-30", html.substring(0, 10));
 	}
 
 	@Test

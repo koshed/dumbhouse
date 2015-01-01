@@ -4,10 +4,12 @@ public class ExtendedAwayStateLogEntry {
 
 	private long timestamp;
 	private String eventOwnerName;
+	private boolean changeToAway;
 
-	public ExtendedAwayStateLogEntry(long timestamp, String eventOwnerName) {
+	public ExtendedAwayStateLogEntry(long timestamp, String eventOwnerName, boolean changeToAway) {
 		this.timestamp = timestamp;
 		this.eventOwnerName = eventOwnerName;
+		this.changeToAway = changeToAway;
 	}
 
 	public String toHTMLString() {
@@ -15,8 +17,14 @@ public class ExtendedAwayStateLogEntry {
 		html.append(PhoneIsAvailableState.formatTimeMillisToDate(timestamp));
 		html.append(": ");
 		html.append(eventOwnerName);
-		html.append(" is extended away.");
+		html.append(" is ");
+		if (changeToAway) {
+			html.append("extended away");
+		}
+		else{
+			html.append("back");
+		}
+		html.append(".");
 		return html.toString();
 	}
-
 }
