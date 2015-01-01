@@ -153,12 +153,16 @@ public class PhoneIsAvailableState {
 	}
 
 	private void addExtendedAwayLog(long timestamp, boolean isAwayMode) {
-		this.extendedAwayStateLog.add(new ExtendedAwayStateLogEntry(timestamp,
-				this.phoneOwnerName, isAwayMode));
+		ExtendedAwayStateLogEntry extendedAwayStateLogEntry = new ExtendedAwayStateLogEntry(timestamp,
+				this.phoneOwnerName, isAwayMode);
+		this.extendedAwayStateLog.add(extendedAwayStateLogEntry);
+		log4j.debug("Extended Away event created: "
+				+ extendedAwayStateLogEntry.toString());
 		while (this.extendedAwayStateLog.size() > 50)
 		{
 			this.extendedAwayStateLog.remove(0);
 		}
+		
 	}
 
 	public boolean isExtendedAway() {

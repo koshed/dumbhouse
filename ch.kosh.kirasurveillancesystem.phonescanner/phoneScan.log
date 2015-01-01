@@ -176,3 +176,5 @@
 2014-12-31 12:32:02,786 main INFO  phonescanner.PhoneScannerRunner - Added Mark's phone mac address: 50:55:27:08:0C:C1
 2015-01-01 13:30:42,000 main INFO  phonescanner.PhoneScannerRunner - BT scan intervall: 5s
 2015-01-01 13:30:42,000 main INFO  phonescanner.PhoneScannerRunner - Added Mark's phone mac address: 50:55:27:08:0C:C1
+2015-01-01 20:54:00,618 main INFO  phonescanner.PhoneScannerRunner - BT scan intervall: 5s
+2015-01-01 20:54:00,622 main INFO  phonescanner.PhoneScannerRunner - Added Mark's phone mac address: 50:55:27:08:0C:C1

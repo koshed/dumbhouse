@@ -1,7 +1,6 @@
 package ch.kosh.kirasurveillancesystem.webserver;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -54,6 +53,7 @@ public class MicroWebServer implements Runnable {
 	/**
 	 * WebServer constructor.
 	 */
+	@SuppressWarnings("resource")
 	public void run() {
 		ServerSocket s;
 
@@ -62,7 +62,6 @@ public class MicroWebServer implements Runnable {
 		try {
 			// create the main server socket
 			s = new ServerSocket(port);
-			// s.close();
 		} catch (Exception e) {
 			log4j.error("Error: " + e);
 			return;
@@ -108,5 +107,4 @@ public class MicroWebServer implements Runnable {
 			}
 		}
 	}
-
 }

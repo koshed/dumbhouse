@@ -6,25 +6,35 @@ public class ExtendedAwayStateLogEntry {
 	private String eventOwnerName;
 	private boolean changeToAway;
 
-	public ExtendedAwayStateLogEntry(long timestamp, String eventOwnerName, boolean changeToAway) {
+	public ExtendedAwayStateLogEntry(long timestamp, String eventOwnerName,
+			boolean changeToAway) {
 		this.timestamp = timestamp;
 		this.eventOwnerName = eventOwnerName;
 		this.changeToAway = changeToAway;
 	}
 
 	public String toHTMLString() {
-		StringBuilder html = new StringBuilder();
-		html.append(PhoneIsAvailableState.formatTimeMillisToDate(timestamp));
-		html.append(": ");
-		html.append(eventOwnerName);
-		html.append(" is ");
+		return formatToString();
+	}
+
+	@Override
+	public String toString() {
+		return formatToString();
+	}
+
+	private String formatToString() {
+		StringBuilder toStringText = new StringBuilder();
+		toStringText.append(PhoneIsAvailableState
+				.formatTimeMillisToDate(timestamp));
+		toStringText.append(": ");
+		toStringText.append(eventOwnerName);
+		toStringText.append(" is ");
 		if (changeToAway) {
-			html.append("extended away");
+			toStringText.append("extended away");
+		} else {
+			toStringText.append("back");
 		}
-		else{
-			html.append("back");
-		}
-		html.append(".");
-		return html.toString();
+		toStringText.append(".");
+		return toStringText.toString();
 	}
 }

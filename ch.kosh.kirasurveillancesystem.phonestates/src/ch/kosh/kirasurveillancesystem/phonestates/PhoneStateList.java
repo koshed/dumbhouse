@@ -42,9 +42,9 @@ public class PhoneStateList {
 
 	public String getExtendedAwayLogAsHTML() {
 		String html = "";
-		for (PhoneIsAvailableState phone: phoneStateList)
-		{
-			html += phone.getExtendedAwayLogAsHTML() + "<br/>" + PHONE_SEPARATOR_HTML + "<br/>";
+		for (PhoneIsAvailableState phone : phoneStateList) {
+			html += phone.getExtendedAwayLogAsHTML() + "<br/>"
+					+ PHONE_SEPARATOR_HTML + "<br/>";
 		}
 		return html;
 	}
@@ -52,5 +52,4 @@ public class PhoneStateList {
 	public List<String> getPingResponses() {
 		return pingResponses;
 	}
-
 }
