@@ -83,6 +83,7 @@ public class PhoneScanner {
 				log4j.debug("Switching power on");
 				switchWlanPowerController.switchPower(true);
 				phoneList.addPingResponse("Swichted cam power on");
+				kiraState = KiraState.ABANDONED;
 			}
 		}
 		if (!isAbandoned)
@@ -93,6 +94,7 @@ public class PhoneScanner {
 				log4j.debug("Switching power off");
 				switchWlanPowerController.switchPower(false);
 				phoneList.addPingResponse("Swichted cam power off");
+				kiraState = KiraState.INHABITED;
 			}
 		}
 
