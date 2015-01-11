@@ -1,4 +1,4 @@
-package ch.kosh.kirasurveillancesystem.phonescanner;
+package ch.kosh.kirasurveillancesystem.phonestates;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,9 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import ch.kosh.kirasurveillancesystem.btscan.L2pingRunner;
 import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
-import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
-import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 
 public class PhoneScanner {
 
@@ -62,14 +60,15 @@ public class PhoneScanner {
 	public void updateStates(PhoneStateList phoneList) throws IOException,
 			InterruptedException {
 		// Scan
-		for (PhoneIsAvailableState phoneState : phoneList.getAll()) {
-			String macAddress = phoneState.getMacAddress();
-			State newState = pingAddress(macAddress);
-			String responseText = phoneState.updateState(newState);
-			phoneList.addPingResponse(responseText);
-		}
+		scanPhones(phoneList);
 
 		// Check for ABANDONED
+		checkStateChange(phoneList);
+
+	}
+
+	private void checkStateChange(PhoneStateList phoneList) throws IOException,
+			InterruptedException {
 		boolean isAbandoned = true;
 		for (PhoneIsAvailableState phones : phoneList.getAll()) {
 			if (!phones.isExtendedAway()) {
@@ -82,21 +81,32 @@ public class PhoneScanner {
 				// State Change to away
 				log4j.debug("Switching power on");
 				switchWlanPowerController.switchPower(true);
-				phoneList.addPingResponse("Swichted cam power on");
+				phoneList.addPingResponse(PhoneIsAvailableState
+						.formatTimeMillisToDate(System.currentTimeMillis())
+						+ ": Switched cam power on");
 				kiraState = KiraState.ABANDONED;
 			}
 		}
-		if (!isAbandoned)
-		{
-			if (kiraState != KiraState.INHABITED)
-			{
-				//State change to @home
+		if (!isAbandoned) {
+			if (kiraState != KiraState.INHABITED) {
+				// State change to @home
 				log4j.debug("Switching power off");
 				switchWlanPowerController.switchPower(false);
-				phoneList.addPingResponse("Swichted cam power off");
+				phoneList.addPingResponse(PhoneIsAvailableState
+						.formatTimeMillisToDate(System.currentTimeMillis())
+						+ ": Switched cam power off");
 				kiraState = KiraState.INHABITED;
 			}
 		}
+	}
 
+	private void scanPhones(PhoneStateList phoneList) throws IOException,
+			InterruptedException {
+		for (PhoneIsAvailableState phoneState : phoneList.getAll()) {
+			String macAddress = phoneState.getMacAddress();
+			State newState = pingAddress(macAddress);
+			String responseText = phoneState.updateState(newState);
+			phoneList.addPingResponse(responseText);
+		}
 	}
 }

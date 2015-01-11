@@ -2,6 +2,8 @@ package ch.kosh.kirasurveillancesystem.phonescanner.test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
@@ -11,7 +13,7 @@ import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 public class PhoneStateListTest {
 
 	@Test
-	public void extendedAwayHTMLTest() {
+	public void extendedAwayHTMLTest() throws IOException, InterruptedException {
 		PhoneStateList list = new PhoneStateList();
 		PhoneIsAvailableState phoneState = new PhoneIsAvailableState("11:42",
 				"extendedAwayHTMLTest");

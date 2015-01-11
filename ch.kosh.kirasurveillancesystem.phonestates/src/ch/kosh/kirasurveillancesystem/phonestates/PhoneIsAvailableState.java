@@ -103,7 +103,7 @@ public class PhoneIsAvailableState {
 		return sb.toString();
 	}
 
-	static String formatTimeMillisToDate(final long timeMillis) {
+	public static String formatTimeMillisToDate(final long timeMillis) {
 		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 				"yyyy-MM-dd HH:mm:ss");
 		simpleDateFormat

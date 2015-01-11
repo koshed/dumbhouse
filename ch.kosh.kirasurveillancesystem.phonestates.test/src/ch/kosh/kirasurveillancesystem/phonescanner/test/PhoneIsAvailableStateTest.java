@@ -3,6 +3,7 @@ package ch.kosh.kirasurveillancesystem.phonescanner.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,10 +15,9 @@ import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
 
 public class PhoneIsAvailableStateTest {
-	
+
 	@Test
-	public void extendedAwayRemovedTest() throws ParseException
-	{
+	public void extendedAwayRemovedTest() throws ParseException, IOException, InterruptedException {
 		String name = "dummy";
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				"AA:22:33", name);
@@ -32,17 +32,16 @@ public class PhoneIsAvailableStateTest {
 		assertEquals("expected away text expected", true,
 				html.contains(expectedStringEnd));
 	}
-	
-	@Test(expected=RuntimeException.class)
-	public void extendedNeedsAwayStateTest()
-	{
+
+	@Test(expected = RuntimeException.class)
+	public void extendedNeedsAwayStateTest() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				"AA:22:33", null);
 		phoneIsAvailableState.setExtendedAway(0);
 	}
 
 	@Test
-	public void extendedAwayLogTest() throws ParseException {
+	public void extendedAwayLogTest() throws ParseException, IOException, InterruptedException {
 		String name = "dummy";
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				"AA:22:33", name);
@@ -58,13 +57,14 @@ public class PhoneIsAvailableStateTest {
 				html.substring(html.length() - expectedStringEnd.length()));
 
 		// second time nothing should happen
-		phoneIsAvailableState.setExtendedAway(dateFormat.parse("2015.12.30 11:44:23").getTime());
+		phoneIsAvailableState.setExtendedAway(dateFormat.parse(
+				"2015.12.30 11:44:23").getTime());
 		html = phoneIsAvailableState.getExtendedAwayLogAsHTML();
 		assertEquals("timestamp test", "2014-12-30", html.substring(0, 10));
 	}
 
 	@Test
-	public void extendedAwayStateSetTest() {
+	public void extendedAwayStateSetTest() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				"11:22:33", "dummy");
 		phoneIsAvailableState.updateState(State.AWAY);
@@ -74,7 +74,7 @@ public class PhoneIsAvailableStateTest {
 	}
 
 	@Test
-	public void updateStateTest() {
+	public void updateStateTest() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				null, null);
 		State expectedNewState = State.AWAY;
@@ -87,7 +87,7 @@ public class PhoneIsAvailableStateTest {
 	}
 
 	@Test
-	public void updateStateTestAvailable() {
+	public void updateStateTestAvailable() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				null, null);
 		State expectedNewState = State.AVAILABLE;
@@ -100,7 +100,7 @@ public class PhoneIsAvailableStateTest {
 	}
 
 	@Test
-	public void updateStateTestInitial() {
+	public void updateStateTestInitial() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				null, null);
 		State expectedNewState = State.UNKNOWN;
@@ -112,7 +112,7 @@ public class PhoneIsAvailableStateTest {
 	}
 
 	@Test
-	public void updateStateHTMLFormatterTest() {
+	public void updateStateHTMLFormatterTest() throws IOException, InterruptedException {
 		PhoneIsAvailableState phoneIsAvailableState = new PhoneIsAvailableState(
 				null, null);
 		String actualOutput = phoneIsAvailableState.toHTMLWebString();

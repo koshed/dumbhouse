@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import ch.kosh.kirasurveillancesystem.btscan.L2pingRunner;
 import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
+import ch.kosh.kirasurveillancesystem.phonestates.PhoneScanner;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 import ch.kosh.kirasurveillancesystem.webserver.MicroWebServer;
 import ch.kosh.kirasurveillancesystem.webserver.MicroWebServerThreadStarter;
