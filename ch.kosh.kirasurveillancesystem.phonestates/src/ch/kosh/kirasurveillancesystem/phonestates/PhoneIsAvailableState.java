@@ -1,5 +1,6 @@
 package ch.kosh.kirasurveillancesystem.phonestates;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,8 @@ public class PhoneIsAvailableState {
 		extendedAwayStateLog = new ArrayList<ExtendedAwayStateLogEntry>();
 	}
 
-	public String updateState(State newState) {
+	public String updateState(State newState) throws IOException,
+			InterruptedException {
 		if (newState == State.AVAILABLE && extendedAwayState) {
 			removeExtendedAwayState();
 		}
@@ -53,13 +55,15 @@ public class PhoneIsAvailableState {
 		return stateChangeText;
 	}
 
-	private void removeExtendedAwayState() {
+	private void removeExtendedAwayState() throws IOException,
+			InterruptedException {
 		extendedAwayState = false;
 		lastSeenTimestamp = System.currentTimeMillis();
 		addExtendedAwayLog(System.currentTimeMillis(), false);
 	}
 
-	private void detectExtendedAwayState() {
+	private void detectExtendedAwayState() throws IOException,
+			InterruptedException {
 		if (!extendedAwayState) {
 			long nowMillis = System.currentTimeMillis();
 			long awayTime = nowMillis - lastSeenTimestamp;
@@ -139,7 +143,8 @@ public class PhoneIsAvailableState {
 		return html;
 	}
 
-	public void setExtendedAway(long timestamp) {
+	public void setExtendedAway(long timestamp) throws IOException,
+			InterruptedException {
 		if (myState != State.AWAY) {
 			throw new RuntimeException(
 					"Cannot enter extended away state, since not even away!");
@@ -153,16 +158,15 @@ public class PhoneIsAvailableState {
 	}
 
 	private void addExtendedAwayLog(long timestamp, boolean isAwayMode) {
-		ExtendedAwayStateLogEntry extendedAwayStateLogEntry = new ExtendedAwayStateLogEntry(timestamp,
-				this.phoneOwnerName, isAwayMode);
+		ExtendedAwayStateLogEntry extendedAwayStateLogEntry = new ExtendedAwayStateLogEntry(
+				timestamp, this.phoneOwnerName, isAwayMode);
 		this.extendedAwayStateLog.add(extendedAwayStateLogEntry);
 		log4j.debug("Extended Away event created: "
 				+ extendedAwayStateLogEntry.toString());
-		while (this.extendedAwayStateLog.size() > 50)
-		{
+		while (this.extendedAwayStateLog.size() > 50) {
 			this.extendedAwayStateLog.remove(0);
 		}
-		
+
 	}
 
 	public boolean isExtendedAway() {

@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ch.kosh.kirasurveillancesystem.webserver"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Log4j"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ch.kosh.kirasurveillancesystem.phonestates"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ch.kosh.kirasurveillancesystem.deviceswitcher"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

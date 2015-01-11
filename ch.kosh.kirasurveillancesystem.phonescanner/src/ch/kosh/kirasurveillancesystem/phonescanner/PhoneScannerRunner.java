@@ -1,9 +1,12 @@
 package ch.kosh.kirasurveillancesystem.phonescanner;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ch.kosh.kirasurveillancesystem.btscan.L2pingRunner;
+import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 import ch.kosh.kirasurveillancesystem.webserver.MicroWebServer;
@@ -20,10 +23,12 @@ public class PhoneScannerRunner implements Runnable {
 	private int scanIntervall;
 
 	public PhoneScannerRunner(int scanIntervall) {
+		SwitchWlanPowerController switchWlanPowerController = new SwitchWlanPowerController();
+		
 		this.phoneList = new PhoneStateList();
 		
 		L2pingRunner l2pingRunner = new L2pingRunner();
-		PhoneScanner phoneScanner = new PhoneScanner(l2pingRunner);
+		PhoneScanner phoneScanner = new PhoneScanner(l2pingRunner, switchWlanPowerController);
 
 		MicroWebServer ws = new MicroWebServer(getPhoneList());
 		startWebServer(ws);
@@ -66,7 +71,7 @@ public class PhoneScannerRunner implements Runnable {
 				phoneScanner.updateStates(this.getPhoneList());
 				Thread.sleep(1000 * this.scanIntervall);
 				// phoneScanner.pingAddresses();
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | IOException e) {
 				e.printStackTrace();
 			}
 		}
