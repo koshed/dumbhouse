@@ -79,7 +79,7 @@ public class PhoneIsAvailableState {
 		}
 
 		String stateChangeText = formatStateChangeText(newState == State.AVAILABLE);
-		log4j.debug(stateChangeText);
+		log4j.trace(stateChangeText);
 		this.myState = newState;
 		return stateChangeText;
 	}
@@ -161,7 +161,7 @@ public class PhoneIsAvailableState {
 		ExtendedAwayStateLogEntry extendedAwayStateLogEntry = new ExtendedAwayStateLogEntry(
 				timestamp, this.phoneOwnerName, isAwayMode);
 		this.extendedAwayStateLog.add(extendedAwayStateLogEntry);
-		log4j.debug("Extended Away event created: "
+		log4j.trace("Extended Away event created: "
 				+ extendedAwayStateLogEntry.toString());
 		while (this.extendedAwayStateLog.size() > 50) {
 			this.extendedAwayStateLog.remove(0);
