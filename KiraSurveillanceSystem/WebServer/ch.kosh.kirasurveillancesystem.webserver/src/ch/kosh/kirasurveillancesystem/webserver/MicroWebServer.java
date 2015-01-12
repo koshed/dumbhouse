@@ -31,15 +31,30 @@ public class MicroWebServer implements Runnable {
 		out.println("<table>");
 		printCamStatusTable(out);
 		printPhoneStatesTable(out);
+		printCamStatesLogTable(out);
 		printExtendedAwayLogTable(out);
 		printDetailLogTable(out);
 		out.println("</table>");
 	}
 
+
 	private void printCamStatusTable(PrintWriter out) {
 		out.println("<tr><td>");
-		out.println(phoneScanner.getCamSwitchLogAsHTML());
+		out.println(phoneScanner.getCamSwitchStateAsHTML());
 		out.println("</td></tr>");
+	}
+
+	private void printPhoneStatesTable(PrintWriter out) {
+		out.println("<tr><td>Elvis status: "
+				+ this.phoneStateList.getAll().get(0).toHTMLWebString() + "</td></tr>"
+				+ "<tr><td>Kahlan status: " + this.phoneStateList.getAll().get(1).toHTMLWebString()
+				+ "</td></tr>");
+	}
+
+	private void printCamStatesLogTable(PrintWriter out) {
+		out.println("<tr><td><b>");
+		out.println(phoneScanner.getCamSwitchLogAsHTML());
+		out.println("</b></td></tr>");
 	}
 
 	private void printExtendedAwayLogTable(PrintWriter out) {
@@ -54,13 +69,6 @@ public class MicroWebServer implements Runnable {
 		out.println("</td></tr>");
 	}
 
-	private void printPhoneStatesTable(PrintWriter out) {
-		out.println("<tr><td>Elvis status: "
-				+ this.phoneStateList.getAll().get(0).toHTMLWebString()
-				+ "</td></tr>" + "<tr><td>Kahlan status: "
-				+ this.phoneStateList.getAll().get(1).toHTMLWebString()
-				+ "</td></tr>");
-	}
 
 	/**
 	 * WebServer constructor.

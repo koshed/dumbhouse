@@ -24,12 +24,14 @@ public class PhoneScanner {
 	L2pingRunner l2pingRunner;
 	private KiraState kiraState;
 	private SwitchWlanPowerController switchWlanPowerController;
+	private ArrayList<KiraStateLogEntry> kiraStateLog;
 
 	public PhoneScanner(L2pingRunner l2pingRunner,
 			SwitchWlanPowerController switchWlanPowerController) {
 		this.l2pingRunner = l2pingRunner;
 		this.switchWlanPowerController = switchWlanPowerController;
 		kiraState = KiraState.UNKNOWN;
+		kiraStateLog = new ArrayList<KiraStateLogEntry>();
 	}
 
 	private boolean pingBTAddress(String macAddress) throws IOException,
@@ -66,11 +68,12 @@ public class PhoneScanner {
 		scanPhones(phoneList);
 
 		// Check for ABANDONED
-		checkStateChange(phoneList);
+		checkStateChange(phoneList, System.currentTimeMillis());
 
 	}
 
-	public void checkStateChange(PhoneStateList phoneList) {
+	public void checkStateChange(PhoneStateList phoneList,
+			long stateChangeTimestamp) {
 		try {
 			boolean isAbandoned = true;
 			for (PhoneIsAvailableState phones : phoneList.getAll()) {
@@ -82,26 +85,33 @@ public class PhoneScanner {
 			if (isAbandoned) {
 				if (kiraState != KiraState.ABANDONED) {
 					// State Change to away
-					kiraState = KiraState.ABANDONED;
+					KiraState newState = KiraState.ABANDONED;
+					kiraState = newState;
+					kiraStateLog.add(new KiraStateLogEntry(
+							stateChangeTimestamp, newState));
 					log4j.debug("Switching power on");
 
 					switchWlanPowerController.switchPower(true);
 
 					phoneList.addPingResponse(PhoneIsAvailableState
-							.formatTimeMillisToDate(System.currentTimeMillis())
+							.formatTimeMillisToDate(stateChangeTimestamp)
 							+ ": Switched cam power on");
 				}
 			}
 			if (!isAbandoned) {
 				if (kiraState != KiraState.INHABITED) {
 					// State change to @home
-					kiraState = KiraState.INHABITED;
+					KiraState newState = KiraState.INHABITED;
+					kiraState = newState;
+					kiraStateLog.add(new KiraStateLogEntry(
+							stateChangeTimestamp, newState));
+
 					log4j.debug("Switching power off");
 
 					switchWlanPowerController.switchPower(false);
 
 					phoneList.addPingResponse(PhoneIsAvailableState
-							.formatTimeMillisToDate(System.currentTimeMillis())
+							.formatTimeMillisToDate(stateChangeTimestamp)
 							+ ": Switched cam power off");
 				}
 			}
@@ -122,6 +132,15 @@ public class PhoneScanner {
 	}
 
 	public String getCamSwitchLogAsHTML() {
+		String html = "";
+		for (int i = kiraStateLog.size() - 1; i >= 0; i--) {
+			KiraStateLogEntry entry = kiraStateLog.get(i);
+			html += entry.toHTMLString() + "<br/>";
+		}
+		return html;
+	}
+
+	public String getCamSwitchStateAsHTML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CAM_STATUS);
 		sb.append(kiraState);

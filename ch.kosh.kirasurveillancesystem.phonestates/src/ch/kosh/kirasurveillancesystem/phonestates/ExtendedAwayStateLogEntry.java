@@ -1,32 +1,21 @@
 package ch.kosh.kirasurveillancesystem.phonestates;
 
-public class ExtendedAwayStateLogEntry {
+public class ExtendedAwayStateLogEntry extends StateLogEntry{
 
-	private long timestamp;
 	private String eventOwnerName;
 	private boolean changeToAway;
 
 	public ExtendedAwayStateLogEntry(long timestamp, String eventOwnerName,
 			boolean changeToAway) {
-		this.timestamp = timestamp;
+		super(timestamp);
 		this.eventOwnerName = eventOwnerName;
 		this.changeToAway = changeToAway;
 	}
 
-	public String toHTMLString() {
-		return formatToString();
-	}
-
 	@Override
-	public String toString() {
-		return formatToString();
-	}
-
-	private String formatToString() {
+	String formatToString() {
 		StringBuilder toStringText = new StringBuilder();
-		toStringText.append(PhoneIsAvailableState
-				.formatTimeMillisToDate(timestamp));
-		toStringText.append(": ");
+		toStringText.append(timestampToString());
 		toStringText.append(eventOwnerName);
 		toStringText.append(" is ");
 		if (changeToAway) {
@@ -34,7 +23,7 @@ public class ExtendedAwayStateLogEntry {
 		} else {
 			toStringText.append("back");
 		}
-		toStringText.append(".");
+		toStringText.append(LOGENTRYENDCHARS);
 		return toStringText.toString();
 	}
 }
