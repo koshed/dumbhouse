@@ -9,6 +9,7 @@ import java.net.Socket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.kosh.kirasurveillancesystem.phonestates.PhoneScanner;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 
 public class MicroWebServer implements Runnable {
@@ -18,16 +19,27 @@ public class MicroWebServer implements Runnable {
 
 	private PhoneStateList phoneStateList;
 
-	public MicroWebServer(PhoneStateList phoneStateList) {
+	private final PhoneScanner phoneScanner;
+
+	public MicroWebServer(PhoneStateList phoneStateList,
+			PhoneScanner phoneScanner) {
 		this.phoneStateList = phoneStateList;
+		this.phoneScanner = phoneScanner;
 	}
 
 	private void printHTMLBody(PrintWriter out) {
 		out.println("<table>");
+		printCamStatusTable(out);
 		printPhoneStatesTable(out);
 		printExtendedAwayLogTable(out);
 		printDetailLogTable(out);
 		out.println("</table>");
+	}
+
+	private void printCamStatusTable(PrintWriter out) {
+		out.println("<tr><td>");
+		out.println(phoneScanner.getCamSwitchLogAsHTML());
+		out.println("</td></tr>");
 	}
 
 	private void printExtendedAwayLogTable(PrintWriter out) {
@@ -43,9 +55,9 @@ public class MicroWebServer implements Runnable {
 	}
 
 	private void printPhoneStatesTable(PrintWriter out) {
-		out.println("<tr><td>Elvis<br/>Status: "
+		out.println("<tr><td>Elvis status: "
 				+ this.phoneStateList.getAll().get(0).toHTMLWebString()
-				+ "</td></tr>" + "<tr><td>Kahlan<br/>Status: "
+				+ "</td></tr>" + "<tr><td>Kahlan status: "
 				+ this.phoneStateList.getAll().get(1).toHTMLWebString()
 				+ "</td></tr>");
 	}
@@ -104,6 +116,7 @@ public class MicroWebServer implements Runnable {
 				remote.close();
 			} catch (Exception e) {
 				log4j.error("Error: " + e);
+				e.printStackTrace();
 			}
 		}
 	}
