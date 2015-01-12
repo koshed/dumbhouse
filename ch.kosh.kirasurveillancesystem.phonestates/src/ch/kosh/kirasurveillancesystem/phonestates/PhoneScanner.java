@@ -12,10 +12,11 @@ import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
 
 public class PhoneScanner {
 
+	public static final String CAM_STATUS = "Cam status: ";
 	private static final Logger log4j = LogManager.getLogger(PhoneScanner.class
 			.getName());
 
-	private enum KiraState {
+	public enum KiraState {
 		UNKNOWN, INHABITED, ABANDONED
 	}
 
@@ -31,9 +32,9 @@ public class PhoneScanner {
 		kiraState = KiraState.UNKNOWN;
 	}
 
-	private boolean pingBTAddress(String address) throws IOException,
+	private boolean pingBTAddress(String macAddress) throws IOException,
 			InterruptedException {
-		String output = l2pingRunner.pingAdress(address);
+		String output = l2pingRunner.pingAdress(macAddress);
 		int indexOfReceivedText = output.indexOf("1 received");
 		// System.out.println("Index of received:" + indexOfReceivedText);
 		return indexOfReceivedText > 0;
@@ -53,6 +54,8 @@ public class PhoneScanner {
 			}
 
 		} catch (IOException | InterruptedException e) {
+			// log4j.trace("Exception: " + e.getMessage());
+			// e.printStackTrace();
 		}
 		return newState;
 	}
@@ -67,36 +70,44 @@ public class PhoneScanner {
 
 	}
 
-	private void checkStateChange(PhoneStateList phoneList) throws IOException,
-			InterruptedException {
-		boolean isAbandoned = true;
-		for (PhoneIsAvailableState phones : phoneList.getAll()) {
-			if (!phones.isExtendedAway()) {
-				isAbandoned = false;
-				break; // just for faster looping
+	public void checkStateChange(PhoneStateList phoneList) {
+		try {
+			boolean isAbandoned = true;
+			for (PhoneIsAvailableState phones : phoneList.getAll()) {
+				if (!phones.isExtendedAway()) {
+					isAbandoned = false;
+					break; // just for faster looping
+				}
 			}
-		}
-		if (isAbandoned) {
-			if (kiraState != KiraState.ABANDONED) {
-				// State Change to away
-				log4j.debug("Switching power on");
-				switchWlanPowerController.switchPower(true);
-				phoneList.addPingResponse(PhoneIsAvailableState
-						.formatTimeMillisToDate(System.currentTimeMillis())
-						+ ": Switched cam power on");
-				kiraState = KiraState.ABANDONED;
+			if (isAbandoned) {
+				if (kiraState != KiraState.ABANDONED) {
+					// State Change to away
+					kiraState = KiraState.ABANDONED;
+					log4j.debug("Switching power on");
+
+					switchWlanPowerController.switchPower(true);
+
+					phoneList.addPingResponse(PhoneIsAvailableState
+							.formatTimeMillisToDate(System.currentTimeMillis())
+							+ ": Switched cam power on");
+				}
 			}
-		}
-		if (!isAbandoned) {
-			if (kiraState != KiraState.INHABITED) {
-				// State change to @home
-				log4j.debug("Switching power off");
-				switchWlanPowerController.switchPower(false);
-				phoneList.addPingResponse(PhoneIsAvailableState
-						.formatTimeMillisToDate(System.currentTimeMillis())
-						+ ": Switched cam power off");
-				kiraState = KiraState.INHABITED;
+			if (!isAbandoned) {
+				if (kiraState != KiraState.INHABITED) {
+					// State change to @home
+					kiraState = KiraState.INHABITED;
+					log4j.debug("Switching power off");
+
+					switchWlanPowerController.switchPower(false);
+
+					phoneList.addPingResponse(PhoneIsAvailableState
+							.formatTimeMillisToDate(System.currentTimeMillis())
+							+ ": Switched cam power off");
+				}
 			}
+		} catch (IOException | InterruptedException e) {
+			// log4j.trace("Exception: " + e.getMessage());
+			// e.printStackTrace();
 		}
 	}
 
@@ -108,5 +119,12 @@ public class PhoneScanner {
 			String responseText = phoneState.updateState(newState);
 			phoneList.addPingResponse(responseText);
 		}
+	}
+
+	public String getCamSwitchLogAsHTML() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(CAM_STATUS);
+		sb.append(kiraState);
+		return sb.toString();
 	}
 }

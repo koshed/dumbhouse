@@ -29,14 +29,13 @@ public class PhoneScannerRunner implements Runnable {
 		this.phoneList = new PhoneStateList();
 		
 		L2pingRunner l2pingRunner = new L2pingRunner();
-		PhoneScanner phoneScanner = new PhoneScanner(l2pingRunner, switchWlanPowerController);
+		this.phoneScanner = new PhoneScanner(l2pingRunner, switchWlanPowerController);
 
-		MicroWebServer ws = new MicroWebServer(getPhoneList());
+		MicroWebServer ws = new MicroWebServer(this.phoneList, this.phoneScanner);
 		startWebServer(ws);
 
 		this.scanIntervall = scanIntervall;
 		log4j.info("BT scan intervall: " + scanIntervall + "s");
-		this.phoneScanner = phoneScanner;
 		String markNexus5Adress = "50:55:27:08:0C:C1";
 		log4j.info("Added Mark's phone mac address: " + markNexus5Adress);
 		String heleneiPhone5sAdress = "48:74:6E:A1:32:EA";

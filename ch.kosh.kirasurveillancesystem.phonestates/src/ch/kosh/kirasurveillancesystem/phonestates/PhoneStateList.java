@@ -41,7 +41,7 @@ public class PhoneStateList {
 	}
 
 	public String getExtendedAwayLogAsHTML() {
-		String html = "";
+		String html = PHONE_SEPARATOR_HTML + "<br/>";
 		for (PhoneIsAvailableState phone : phoneStateList) {
 			html += phone.getExtendedAwayLogAsHTML() + "<br/>"
 					+ PHONE_SEPARATOR_HTML + "<br/>";
