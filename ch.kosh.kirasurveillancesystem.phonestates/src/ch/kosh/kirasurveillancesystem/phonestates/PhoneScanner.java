@@ -13,8 +13,7 @@ import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
 public class PhoneScanner {
 
 	public static final String CAM_STATUS = "Cam status: ";
-	private static final Logger log4j = LogManager.getLogger(PhoneScanner.class
-			.getName());
+	private static final Logger log4j = LogManager.getLogger(PhoneScanner.class.getName());
 
 	public enum KiraState {
 		UNKNOWN, INHABITED, ABANDONED
@@ -34,8 +33,7 @@ public class PhoneScanner {
 		kiraStateLog = new ArrayList<KiraStateLogEntry>();
 	}
 
-	private boolean pingBTAddress(String macAddress) throws IOException,
-			InterruptedException {
+	private boolean pingBTAddress(String macAddress) throws IOException, InterruptedException {
 		String output = l2pingRunner.pingAdress(macAddress);
 		int indexOfReceivedText = output.indexOf("1 received");
 		// System.out.println("Index of received:" + indexOfReceivedText);
@@ -62,8 +60,7 @@ public class PhoneScanner {
 		return newState;
 	}
 
-	public void updateStates(PhoneStateList phoneList) throws IOException,
-			InterruptedException {
+	public void updateStates(PhoneStateList phoneList) throws IOException, InterruptedException {
 		// Scan
 		scanPhones(phoneList);
 
@@ -72,8 +69,7 @@ public class PhoneScanner {
 
 	}
 
-	public void checkStateChange(PhoneStateList phoneList,
-			long stateChangeTimestamp) {
+	public void checkStateChange(PhoneStateList phoneList, long stateChangeTimestamp) {
 		try {
 			boolean isAbandoned = true;
 			for (PhoneIsAvailableState phones : phoneList.getAll()) {
@@ -87,8 +83,7 @@ public class PhoneScanner {
 					// State Change to away
 					KiraState newState = KiraState.ABANDONED;
 					kiraState = newState;
-					kiraStateLog.add(new KiraStateLogEntry(
-							stateChangeTimestamp, newState));
+					addToKiraStateLog(stateChangeTimestamp, newState);
 					log4j.debug("Switching power on");
 
 					switchWlanPowerController.switchPower(true);
@@ -103,8 +98,7 @@ public class PhoneScanner {
 					// State change to @home
 					KiraState newState = KiraState.INHABITED;
 					kiraState = newState;
-					kiraStateLog.add(new KiraStateLogEntry(
-							stateChangeTimestamp, newState));
+					addToKiraStateLog(stateChangeTimestamp, newState);
 
 					log4j.debug("Switching power off");
 
@@ -121,8 +115,14 @@ public class PhoneScanner {
 		}
 	}
 
-	private void scanPhones(PhoneStateList phoneList) throws IOException,
-			InterruptedException {
+	private void addToKiraStateLog(long stateChangeTimestamp, KiraState newState) {
+		kiraStateLog.add(new KiraStateLogEntry(stateChangeTimestamp, newState));
+		while (kiraStateLog.size() > 100) {
+			kiraStateLog.remove(0);
+		}
+	}
+
+	private void scanPhones(PhoneStateList phoneList) throws IOException, InterruptedException {
 		for (PhoneIsAvailableState phoneState : phoneList.getAll()) {
 			String macAddress = phoneState.getMacAddress();
 			State newState = pingAddress(macAddress);
@@ -143,7 +143,11 @@ public class PhoneScanner {
 	public String getCamSwitchStateAsHTML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CAM_STATUS);
-		sb.append(kiraState);
+		if (kiraState == KiraState.ABANDONED) {
+			sb.append("on");
+		} else {
+			sb.append("off");
+		}
 		return sb.toString();
 	}
 }

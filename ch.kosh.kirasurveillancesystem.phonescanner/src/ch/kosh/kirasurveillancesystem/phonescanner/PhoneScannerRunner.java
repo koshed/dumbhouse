@@ -49,7 +49,7 @@ public class PhoneScannerRunner implements Runnable {
 
 	public static void main(String[] args) {
 
-		int scanIntervall = 5;
+		int scanIntervall = 20;
 		Thread phoneScannerMinuteThread = new Thread(new PhoneScannerRunner(
 				scanIntervall));
 		phoneScannerMinuteThread.start();

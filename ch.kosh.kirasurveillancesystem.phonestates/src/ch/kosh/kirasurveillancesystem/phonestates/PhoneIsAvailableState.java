@@ -163,7 +163,7 @@ public class PhoneIsAvailableState {
 		this.extendedAwayStateLog.add(extendedAwayStateLogEntry);
 		log4j.trace("Extended Away event created: "
 				+ extendedAwayStateLogEntry.toString());
-		while (this.extendedAwayStateLog.size() > 50) {
+		while (this.extendedAwayStateLog.size() > 20) {
 			this.extendedAwayStateLog.remove(0);
 		}
 

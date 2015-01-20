@@ -22,7 +22,7 @@ public class PhoneStateList {
 		if (responseText != null) {
 			this.pingResponses.add(responseText);
 			// memory clean up
-			while (this.pingResponses.size() > 100) {
+			while (this.pingResponses.size() > 10) {
 				this.pingResponses.remove(0);
 			}
 		}
