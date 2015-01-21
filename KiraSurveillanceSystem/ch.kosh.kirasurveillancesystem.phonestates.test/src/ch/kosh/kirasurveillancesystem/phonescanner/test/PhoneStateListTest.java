@@ -46,7 +46,7 @@ public class PhoneStateListTest {
 			phoneStateList.addPingResponse(responseText);
 		}
 		phoneStateList.addPingResponse(null);
-		assertEquals(100, phoneStateList.getPingResponses().size());
+		assertEquals(10, phoneStateList.getPingResponses().size());
 	}
 
 	@Test

@@ -19,9 +19,47 @@ public class PhoneScanner {
 		UNKNOWN, INHABITED, ABANDONED
 	}
 
+	public enum CamState {
+		UNKNOWN, OFF, ON;
+	}
+
+	public class KiraStates {
+		KiraState kiraState;
+		CamState camState;
+
+		public KiraStates() {
+			this.kiraState = KiraState.UNKNOWN;
+			this.camState = CamState.UNKNOWN;
+		}
+
+		public void setState(KiraState newState) {
+			this.kiraState = newState;
+			switch (newState) {
+			case ABANDONED:
+				this.camState = CamState.ON;
+				break;
+			case INHABITED:
+				this.camState = CamState.OFF;
+				break;
+			case UNKNOWN:
+				this.camState = CamState.UNKNOWN;
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public KiraState getKiraState(){
+			return this.kiraState;
+		}
+		public CamState getCamState(){
+			return this.camState;
+		}
+	}
+
 	ArrayList<String> addresses = new ArrayList<String>();
 	L2pingRunner l2pingRunner;
-	private KiraState kiraState;
+	private KiraStates kiraState;
 	private SwitchWlanPowerController switchWlanPowerController;
 	private ArrayList<KiraStateLogEntry> kiraStateLog;
 
@@ -29,7 +67,7 @@ public class PhoneScanner {
 			SwitchWlanPowerController switchWlanPowerController) {
 		this.l2pingRunner = l2pingRunner;
 		this.switchWlanPowerController = switchWlanPowerController;
-		kiraState = KiraState.UNKNOWN;
+		kiraState = new KiraStates();
 		kiraStateLog = new ArrayList<KiraStateLogEntry>();
 	}
 
@@ -79,10 +117,10 @@ public class PhoneScanner {
 				}
 			}
 			if (isAbandoned) {
-				if (kiraState != KiraState.ABANDONED) {
+				if (kiraState.getKiraState() != KiraState.ABANDONED) {
 					// State Change to away
 					KiraState newState = KiraState.ABANDONED;
-					kiraState = newState;
+					kiraState.setState(newState);
 					addToKiraStateLog(stateChangeTimestamp, newState);
 					log4j.debug("Switching power on");
 
@@ -94,10 +132,10 @@ public class PhoneScanner {
 				}
 			}
 			if (!isAbandoned) {
-				if (kiraState != KiraState.INHABITED) {
+				if (kiraState.getKiraState() != KiraState.INHABITED) {
 					// State change to @home
 					KiraState newState = KiraState.INHABITED;
-					kiraState = newState;
+					kiraState.setState(newState);
 					addToKiraStateLog(stateChangeTimestamp, newState);
 
 					log4j.debug("Switching power off");
@@ -143,11 +181,11 @@ public class PhoneScanner {
 	public String getCamSwitchStateAsHTML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CAM_STATUS);
-		if (kiraState == KiraState.ABANDONED) {
-			sb.append("on");
-		} else {
-			sb.append("off");
-		}
+		sb.append(kiraState.getCamState());
 		return sb.toString();
+	}
+
+	public KiraStates getKiraStateObject() {
+		return this.kiraState;
 	}
 }

@@ -15,6 +15,7 @@ import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneScanner;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
+import ch.kosh.kirasurveillancesystem.phonestates.PhoneScanner.CamState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneScanner.KiraState;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneStateList;
 
@@ -74,8 +75,8 @@ public class PhoneScannerTest {
 		SwitchWlanPowerController camSwitch = new SwitchWlanPowerController();
 		PhoneScanner ps = new PhoneScanner(null, camSwitch);
 		String actualOutput = ps.getCamSwitchStateAsHTML();
-		String expected = KiraState.UNKNOWN.toString();
-		assertTrue("initial state expected: " + expected, actualOutput.indexOf(expected) > 0);
+		String expected = PhoneScanner.CAM_STATUS +  CamState.UNKNOWN.toString();
+		assertEquals("initial state expected", expected, actualOutput);
 		PhoneStateList phoneList = new PhoneStateList();
 		PhoneIsAvailableState testPhone = new PhoneIsAvailableState(null, null);
 		testPhone.updateState(PhoneIsAvailableState.State.AWAY);
@@ -83,7 +84,25 @@ public class PhoneScannerTest {
 		phoneList.addNewPhone(testPhone);
 		ps.checkStateChange(phoneList, 0);
 		String actualAwayOutput = ps.getCamSwitchStateAsHTML();
-		String expectedAway = PhoneScanner.CAM_STATUS + KiraState.ABANDONED.toString();
+		String expectedAway = PhoneScanner.CAM_STATUS + CamState.ON.toString();
+		assertEquals(expectedAway, actualAwayOutput);
+	}
+	
+	@Test
+	public void kiraHouseStateTest() throws IOException, InterruptedException {
+		SwitchWlanPowerController camSwitch = new SwitchWlanPowerController();
+		PhoneScanner ps = new PhoneScanner(null, camSwitch);
+		String actualOutput = ps.getKiraStateObject().getKiraState().toString();
+		String expected = KiraState.UNKNOWN.toString();
+		assertEquals("initial state expected", expected, actualOutput);
+		PhoneStateList phoneList = new PhoneStateList();
+		PhoneIsAvailableState testPhone = new PhoneIsAvailableState(null, null);
+		testPhone.updateState(PhoneIsAvailableState.State.AWAY);
+		testPhone.setExtendedAway(0);
+		phoneList.addNewPhone(testPhone);
+		ps.checkStateChange(phoneList, 0);
+		String actualAwayOutput = ps.getKiraStateObject().getKiraState().toString();
+		String expectedAway = KiraState.ABANDONED.toString();
 		assertEquals(expectedAway, actualAwayOutput);
 	}
 }
