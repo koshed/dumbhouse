@@ -10,8 +10,8 @@ import ch.kosh.kirasurveillancesystem.btscan.L2pingRunner;
 import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
 import ch.kosh.kirasurveillancesystem.phonestates.PhoneIsAvailableState.State;
 
-public class PhoneScanner {
 
+public class PhoneScanner {
 	public static final String CAM_STATUS = "Cam status: ";
 	private static final Logger log4j = LogManager.getLogger(PhoneScanner.class.getName());
 
