@@ -1,14 +1,10 @@
 package ch.kosh.kirasurveillancesystem.phonescanner.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.junit.Test;
 
 import ch.kosh.kirasurveillancesystem.deviceswitcher.SwitchWlanPowerController;
